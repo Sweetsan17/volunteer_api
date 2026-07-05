@@ -54,3 +54,10 @@ def create_user():
         jsonify({"message": "User created successfully.", "user": new_user.to_dict()}),
         201,
     )
+
+
+def get_users(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found."}), 404
+    return jsonify({"user": user.to_dict()}), 200
