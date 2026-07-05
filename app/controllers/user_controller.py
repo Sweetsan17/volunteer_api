@@ -95,3 +95,14 @@ def update_user(user_id):
         jsonify({"message": "User updated successfully.", "user": user.to_dict()}),
         200,
     )
+
+
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found."}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": "User deleted successfully."}), 200
