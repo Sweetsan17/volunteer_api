@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import request, jsonify
 from app.extensions import db
 from app.models.user_model import User
+from app.utils import utc_now
 
 
 def validate_user_payload(data, user_id=None):
@@ -43,8 +44,8 @@ def create_user():
         username=data.get("username"),
         email=data.get("email"),
         password=data.get("password"),
-        created_at=datetime.utc_now(),
-        updated_at=datetime.utc_now(),
+        created_at=utc_now(),
+        updated_at=utc_now(),
     )
     db.session.add(new_user)
     db.session.commit()
