@@ -3,6 +3,7 @@ from flask import request, jsonify
 from app.extensions import db
 from app.models.user_model import User
 
+
 def validate_user_payload(data, user_id=None):
     errors = []
     if not data:
@@ -28,3 +29,27 @@ def validate_user_payload(data, user_id=None):
 
     return errors
 
+
+def create_user():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body is required."}), 400
+
+    errors = validate_user_payload(data)
+    if errors:
+        return jsonify({"errors": errors}), 400
+
+    new_user = User(
+        username=data.get("username"),
+        email=data.get("email"),
+        password=data.get("password"),
+        created_at=datetime.utc_now(),
+        updated_at=datetime.utc_now(),
+    )
+    db.session.add(new_user)
+    db.session.commit()
+
+    return (
+        jsonify({"message": "User created successfully.", "user": new_user.to_dict()}),
+        201,
+    )
