@@ -1,4 +1,3 @@
-from datetime import datetime
 from flask import request, jsonify
 from app.extensions import db
 from app.models.user_model import User
