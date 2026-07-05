@@ -68,3 +68,30 @@ def get_user(user_id):
     if not user:
         return jsonify({"error": "User not found."}), 404
     return jsonify({"user": user.to_dict()}), 200
+
+
+def update_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found."}), 404
+
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body is required."}), 400
+
+    errors = validate_user_payload(data, user_id=user_id)
+    if errors:
+        return jsonify({"errors": errors}), 400
+
+    user.username = data.get("username", user.username)
+    user.email = data.get("email", user.email)
+    if "password" in data:
+        user.set_password(data["password"])
+    user.updated_at = utc_now()
+
+    db.session.commit()
+
+    return (
+        jsonify({"message": "User updated successfully.", "user": user.to_dict()}),
+        200,
+    )
